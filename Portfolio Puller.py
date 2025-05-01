@@ -5,20 +5,14 @@ import pandas as pd
 df = pd.read_excel('API_stock_prices.xlsx')
 
 port_ = {
-    'PORT_HOLDER' : [],
-    'STOCK_NAME' : [],
-     'AVG_PRICE' : [],
-      'SHARES' : []
-      }
-'''
-class Portfolio():
-    def __init__(self, Port_Holder, Name, Avg_price, Lots):
-        self.Port_Holder = Port_Holder
-        self.Name = Name
-        self.Avg_price = Avg_price
-        self.Lots = Lots
-'''
-def Portfolio_details(Port_Holder):
+    'PORT_HOLDER': [],
+    'STOCK_NAME': [],
+    'AVG_PRICE': [],
+    'SHARES': [],
+    'THRESHOLD_LIMIT': []
+}
+
+def Portfolio_details(Port_Holder, Thershold_limit):
     
     while True :
         stock_Name = input('Enter the name of the holding stock Eg : TCS, WIPRO...Else enter Done : ')
@@ -44,14 +38,19 @@ def Portfolio_details(Port_Holder):
     
             list4 = port_['SHARES']
             list4.append(Lots)   
-            port_.update({'PORT_HOLDER' : list1, 'STOCK_NAME' : list2, 'AVG_PRICE' : list3, 'SHARES' : list4} )
+
+            list5 = port_['THRESHOLD_LIMIT']
+            list5.append(Thershold_limit) 
+            port_.update({'PORT_HOLDER' : list1, 'STOCK_NAME' : list2, 'AVG_PRICE' : list3, 'SHARES' : list4, 'THRESHOLD_LIMIT' : list5} )
 
 while True:
     Port_Holder = input('Enter the name of the account holder...Else enter Done: ')
     if Port_Holder.strip().upper() == 'DONE':
             break
+    Thershold_limit = float(input('Enter the Threshold limit for a stock : '))
+    
     Port_Holder = Port_Holder.strip().upper()
-    Portfolio_details(Port_Holder)
+    Portfolio_details(Port_Holder, Thershold_limit)
     
 df1 = pd.DataFrame(port_)
 
