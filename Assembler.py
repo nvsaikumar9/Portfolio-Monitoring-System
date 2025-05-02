@@ -21,23 +21,29 @@ df1.to_excel('NSE_stocks_name.xlsx', index=True, engine='openpyxl')
 stock_names = df1['STOCK_NAME'].tolist()
 
 # Initialize LTP dictionary
-LTP = {'STOCK_NAME': [], 'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': []}
+LTP = {'STOCK_NAME': [], 'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'PREVIOUS_CLOSE': []}
 
 # Fetch data for all stocks in one API call
-price_data = yf.download(tickers=stock_names, period="1d", interval="1d", group_by='ticker', threads=True)
+price_data = yf.download(tickers=stock_names, period="2d", interval="1d", group_by='ticker', threads=True)
 
 # Process each stock
 for stock_name in stock_names:
     if stock_name in price_data:
         stock_data = price_data[stock_name]
+
         if not stock_data.empty:
             # Extract the latest data
+            
             latest_data = stock_data.iloc[-1]
             LTP['STOCK_NAME'].append(stock_name)
             LTP['CLOSE'].append(latest_data['Close'])
             LTP['OPEN'].append(latest_data['Open'])
             LTP['HIGH'].append(latest_data['High'])
             LTP['LOW'].append(latest_data['Low'])
+
+            last_data = stock_data.iloc[0]  
+            LTP['PREVIOUS_CLOSE'].append(last_data['Close'])
+
 
 # Convert LTP dictionary to DataFrame and save to Excel
 df2 = pd.DataFrame(LTP)
@@ -51,10 +57,11 @@ port_ = {
     'STOCK_NAME': [],
     'AVG_PRICE': [],
     'SHARES': [],
-    'THRESHOLD_LIMIT': []
+    'THRESHOLD_LIMIT': [],
+    'Email': []
 }
 
-def Portfolio_details(Port_Holder, Thershold_limit):
+def Portfolio_details(Port_Holder, Thershold_limit, Email):
     
     while True :
         stock_Name = input('Enter the name of the holding stock Eg : TCS, WIPRO...Else enter Done : ')
@@ -83,14 +90,18 @@ def Portfolio_details(Port_Holder, Thershold_limit):
 
             list5 = port_['THRESHOLD_LIMIT']
             list5.append(Thershold_limit) 
-            port_.update({'PORT_HOLDER' : list1, 'STOCK_NAME' : list2, 'AVG_PRICE' : list3, 'SHARES' : list4, 'THRESHOLD_LIMIT' : list5} )
+
+            list6 = port_['Email']
+            list6.append(Email)
+            port_.update({'PORT_HOLDER' : list1, 'STOCK_NAME' : list2, 'AVG_PRICE' : list3, 'SHARES' : list4, 'THRESHOLD_LIMIT' : list5, 'Email' : list6} )
 
 while True:
     Port_Holder = input('Enter the name of the account holder...Else enter Done: ')
     if Port_Holder.strip().upper() == 'DONE':
             break
     Thershold_limit = float(input('Enter the Threshold limit for a stock : '))
-    
+    Email = input('Enter the email of the portfolio holder : ')
+
     Port_Holder = Port_Holder.strip().upper()
     Portfolio_details(Port_Holder, Thershold_limit)
        
@@ -120,7 +131,7 @@ Uniq_port_holder = list(df_portfolio['PORT_HOLDER'].unique())
 New_columns = {
     'PORT_HOLDER': [], 'STOCK_NAME': [], 'AVG_PRICE': [], 'SHARES': [],
     '%HIGH_CHANGE': [], '%LOW_CHANGE': [], 'CURRENT_%': [], 'HIGH_TO_LOW': [],
-    'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': []
+    'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': [],  'PREVIOUS_CLOSE' : [], 'ACTUAL_CLOSE%' : [], 'EMAIL' : []
 }
 
 # Process data
@@ -138,6 +149,7 @@ for i in Uniq_port_holder:
         open_price = float(df_API_stock_values['OPEN'].iloc[0])
         High_price = float(df_API_stock_values['HIGH'].iloc[0])
         Low_price = float(df_API_stock_values['LOW'].iloc[0])
+        previous_close = float(df_API_stock_values['PREVIOUS_CLOSE'].iloc[0])
 
         # Extract portfolio values
         df_port_stock_vales = df_port_holder[df_port_holder['STOCK_NAME'] == j]
@@ -145,8 +157,8 @@ for i in Uniq_port_holder:
         Num_shares = int(df_port_stock_vales['SHARES'].iloc[0])
 
         # Calculate metrics
-        per_change_High = ((High_price - open_price) / open_price) * 100
-        per_change_Low = ((open_price - Low_price) / open_price) * 100
+        per_change_High = ((High_price - previous_close) / previous_close) * 100
+        per_change_Low = ((previous_close - Low_price) / previous_close) * 100
         per_currect = ((close_price - open_price) / open_price) * 100
         delta = ((High_price - Low_price) / Low_price) * 100
 
@@ -164,6 +176,9 @@ for i in Uniq_port_holder:
         New_columns['LOW'].append(Low_price)
         New_columns['OPEN'].append(open_price)
         New_columns['THRESHOLD_LIMIT'].append(float(df_port_stock_vales['THRESHOLD_LIMIT'].iloc[0]))
+        New_columns['PREVIOUS_CLOSE'].append(previous_close)
+        New_columns['ACTUAL_CLOSE%'].append(((close_price - previous_close) / previous_close) * 100)
+        New_columns['EMAIL'].append(df_port_stock_vales['Email'].iloc[0])
 
 
 # Save to Excel
@@ -174,15 +189,15 @@ df4.to_excel(output_file, index=False, engine='openpyxl')
 
 #df = pd.read_excel('Portfolio_Analyser.xlsx')
 
-#current gainer and looser
-#the total portfolio value
-
 for j in df4['PORT_HOLDER'].unique():
     # Filter the DataFrame for the current portfolio holder
     df_port_ = df4[df4['PORT_HOLDER']== j]
     rows, columns = df_port_.shape
 
     Report = ''
+
+    Report += f"Portfolio Holder: {j}\n"
+    Report += f"Email : {df_port_['EMAIL']}\n"
 
     # Calculate the total portfolio value
     total_portfolio_value = [(i*j) for i,j in zip(df_port_['AVG_PRICE'], df_port_['SHARES'])]
@@ -192,16 +207,13 @@ for j in df4['PORT_HOLDER'].unique():
     current_portfolio_value = sum(current_portfolio_value)
     profitloss = current_portfolio_value - total_portfolio_value
 
-    '''
-    Top_looser_per = df_port_['%HIGH_CHANGE'].min()
-    Top_looser_stock = df_port_['STOCK_NAME'][df_port_['%LOW_CHANGE'].idxmin()]
-    Top_gainer_stock = df_port_['STOCK_NAME'][df_port_['%HIGH_CHANGE'].idxmax()]
-    Top_gainer_per = df_port_['%HIGH_CHANGE'].max()
+    Top_looser_per = df_port_['ACTUAL_CLOSE%'].min()
+    Top_looser_stock = df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmin()]
+    Top_gainer_stock = df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmax()]
+    Top_gainer_per = df_port_['ACTUAL_CLOSE%'].max()
 
-    Report += f"Top Gainer: {df_port_['STOCK_NAME'][df_port_['CURRENT_%'].idxmax()]} with change of {Top_gainer_per:.2f}%\n"
-    Report += f"Top Looser: {df_port_['STOCK_NAME'][df_port_['CURRENT_%'].idxmin()]} with change of {df_port_['%LOW_CHANGE'].min():.2f}%\n"
-
-    '''
+    Report += f"Top Gainer: {df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmax()]} with change of {Top_gainer_per:.2f}%\n"
+    Report += f"Top Looser: {df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmin()]} with change of {Top_looser_per:.2f}%\n"
     
     Report += f"Portfolio Holder: {j}, P/L : {profitloss:.2f}\n"
     Report += f"Total invested: {total_portfolio_value:.2f}\n"
@@ -216,20 +228,73 @@ for j in df4['PORT_HOLDER'].unique():
         current_price = df_port_['CLOSE'].iloc[i]
         low_change = df_port_['%LOW_CHANGE'].iloc[i]
         high_change = df_port_['%HIGH_CHANGE'].iloc[i]
-        current_price_change = df_port_['CURRENT_%'].iloc[i]
+        current_price_change = df_port_['ACTUAL_CLOSE%'].iloc[i]
 
         # Calculate the weightage of the stock in the portfolio
         total_investment_share = avg_price * shares
         weightage = (total_investment_share / total_portfolio_value) * 100
 
         if threshold_limit < low_change:
-            Report += f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold and corrected by {low_change:.2f}%, Current of open : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%\n"
-            print(f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold by {low_change:.2f}%, Current at : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%")
+            Report += f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold and corrected by {low_change:.2f}%, Today's change : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%\n"
+            #print(f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold by {low_change:.2f}%, Current at : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%")
         elif threshold_limit < high_change:
-            Report += f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold and raise by {high_change:.2f}%, Current of price : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%\n"
-            print(f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold by {high_change:.2f}%, Current at : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%")
-    
+            Report += f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold and raise by {high_change:.2f}%, Today's change : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%\n"
+            #print(f"Portfolio Holder: {j}, Stock: {stock_name}, crossed threshold by {high_change:.2f}%, Current at : {current_price_change:.2f}%, Holding weightage : {weightage:.2f}%")
 
     with open(f'Report {j}.txt', 'w+') as f:
         f.write(Report)
         f.close()
+
+'''"
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import schedule
+import time
+import pandas as pd
+with open('Report.txt', 'r') as file:
+    file_data = file.read()
+
+for i in file_data.split('\n'):
+    if i.startswith('Email'):
+        email = i.split(':')[1].strip()
+        break
+
+print(email)
+
+# Function to send email
+def send_email():
+    sender_email = 'n.v.saikumar9@gmail.com'
+    sender_password = "upuuozxqebztquel"
+    recipient_email = email
+
+    subject = "Daily Report on Portfolio"
+    body = file_data
+
+    # Create the email
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        # Connect to the SMTP server and send the email
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipient_email, msg.as_string())
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+# Schedule the email to be sent every 2 minutes
+schedule.every(2).minutes.do(send_email)
+
+print("Scheduler is running...")
+
+# Keep the script running
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+'''

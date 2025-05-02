@@ -1,0 +1,10 @@
+Portfolio Holder: NILLA NAGRAJ
+Email : nillanagaraju567@gmail.com
+Top Gainer: HAPPSTMNDS with change of 4.33%
+Top Looser: COCHINSHIP with change of -3.85%
+Portfolio Holder: NILLA NAGRAJ, P/L : 803.60
+Total invested: 19007.93
+Current Portfolio Value: 19811.53
+Portfolio Holder: NILLA NAGRAJ, Stock: COCHINSHIP, crossed threshold and corrected by 4.22%, Today's change : -3.85%, Holding weightage : 7.59%
+Portfolio Holder: NILLA NAGRAJ, Stock: EXIDEIND, crossed threshold and raise by 3.34%, Today's change : 0.97%, Holding weightage : 2.00%
+Portfolio Holder: NILLA NAGRAJ, Stock: HAPPSTMNDS, crossed threshold and raise by 5.62%, Today's change : 4.33%, Holding weightage : 3.02%

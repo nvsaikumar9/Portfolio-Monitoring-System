@@ -21,7 +21,7 @@ Uniq_port_holder = list(df_portfolio['PORT_HOLDER'].unique())
 New_columns = {
     'PORT_HOLDER': [], 'STOCK_NAME': [], 'AVG_PRICE': [], 'SHARES': [],
     '%HIGH_CHANGE': [], '%LOW_CHANGE': [], 'CURRENT_%': [], 'HIGH_TO_LOW': [],
-    'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': []
+    'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': [], 'PREVIOUS_CLOSE' : [], 'ACTUAL_CLOSE%' : [], 'EMAIL' : []
 }
 
 # Process data
@@ -39,6 +39,7 @@ for i in Uniq_port_holder:
         open_price = float(df_API_stock_values['OPEN'].iloc[0])
         High_price = float(df_API_stock_values['HIGH'].iloc[0])
         Low_price = float(df_API_stock_values['LOW'].iloc[0])
+        previous_close = float(df_API_stock_values['PREVIOUS_CLOSE'].iloc[0])
 
         # Extract portfolio values
         df_port_stock_vales = df_port_holder[df_port_holder['STOCK_NAME'] == j]
@@ -46,8 +47,8 @@ for i in Uniq_port_holder:
         Num_shares = int(df_port_stock_vales['SHARES'].iloc[0])
 
         # Calculate metrics
-        per_change_High = ((High_price - open_price) / open_price) * 100
-        per_change_Low = ((open_price - Low_price) / open_price) * 100
+        per_change_High = ((High_price - previous_close) / previous_close) * 100
+        per_change_Low = ((previous_close - Low_price) / previous_close) * 100
         per_currect = ((close_price - open_price) / open_price) * 100
         delta = ((High_price - Low_price) / Low_price) * 100
 
@@ -65,6 +66,9 @@ for i in Uniq_port_holder:
         New_columns['LOW'].append(Low_price)
         New_columns['OPEN'].append(open_price)
         New_columns['THRESHOLD_LIMIT'].append(float(df_port_stock_vales['THRESHOLD_LIMIT'].iloc[0]))
+        New_columns['PREVIOUS_CLOSE'].append(previous_close)
+        New_columns['ACTUAL_CLOSE%'].append(((close_price - previous_close) / previous_close) * 100)
+        New_columns['EMAIL'].append(df_port_stock_vales['Email'].iloc[0])
 
 
 # Save to Excel

@@ -9,10 +9,11 @@ port_ = {
     'STOCK_NAME': [],
     'AVG_PRICE': [],
     'SHARES': [],
-    'THRESHOLD_LIMIT': []
+    'THRESHOLD_LIMIT': [],
+    'Email': []
 }
 
-def Portfolio_details(Port_Holder, Thershold_limit):
+def Portfolio_details(Port_Holder, Thershold_limit, Email):
     
     while True :
         stock_Name = input('Enter the name of the holding stock Eg : TCS, WIPRO...Else enter Done : ')
@@ -41,16 +42,20 @@ def Portfolio_details(Port_Holder, Thershold_limit):
 
             list5 = port_['THRESHOLD_LIMIT']
             list5.append(Thershold_limit) 
-            port_.update({'PORT_HOLDER' : list1, 'STOCK_NAME' : list2, 'AVG_PRICE' : list3, 'SHARES' : list4, 'THRESHOLD_LIMIT' : list5} )
+
+            list6 = port_['Email']
+            list6.append(Email)
+            port_.update({'PORT_HOLDER' : list1, 'STOCK_NAME' : list2, 'AVG_PRICE' : list3, 'SHARES' : list4, 'THRESHOLD_LIMIT' : list5, 'Email' : list6} )
 
 while True:
     Port_Holder = input('Enter the name of the account holder...Else enter Done: ')
     if Port_Holder.strip().upper() == 'DONE':
             break
     Thershold_limit = float(input('Enter the Threshold limit for a stock : '))
-    
+    Email = input('Enter the email of the portfolio holder : ')
+
     Port_Holder = Port_Holder.strip().upper()
-    Portfolio_details(Port_Holder, Thershold_limit)
+    Portfolio_details(Port_Holder, Thershold_limit, Email)
     
 df1 = pd.DataFrame(port_)
 
