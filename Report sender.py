@@ -42,7 +42,7 @@ def send_email():
         print(f"Failed to send email: {e}")
 
 # Schedule the email to be sent every 2 minutes
-schedule.every(2).minutes.do(send_email)
+schedule.every(1).minutes.do(send_email)
 
 print("Scheduler is running...")
 

@@ -1,8 +1,0 @@
-Portfolio Holder: SWAMY, P/L : -1473.94
-Total invested: 22344.09
-Current Portfolio Value: 20870.15
-Portfolio Holder: SWAMY, Stock: AWHCL, crossed threshold and corrected by 3.69%, Current of open : -3.19%, Holding weightage : 6.02%
-Portfolio Holder: SWAMY, Stock: BANKINDIA, crossed threshold and corrected by 2.73%, Current of open : -2.24%, Holding weightage : 5.98%
-Portfolio Holder: SWAMY, Stock: BSOFT, crossed threshold and corrected by 3.08%, Current of open : -2.40%, Holding weightage : 18.55%
-Portfolio Holder: SWAMY, Stock: CONCOR, crossed threshold and corrected by 2.89%, Current of open : -2.08%, Holding weightage : 10.88%
-Portfolio Holder: SWAMY, Stock: RELIANCE, crossed threshold and corrected by 2.35%, Current of open : 0.21%, Holding weightage : 34.87%

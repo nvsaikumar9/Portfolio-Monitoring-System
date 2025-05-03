@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 
 # Read stock names from Excel
-df = pd.read_excel('NSE_stocks_name.xlsx')
+df = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSE_stocks_name.xlsx')
 stock_names = df['STOCK_NAME'].tolist()
 
 # Initialize LTP dictionary
@@ -32,6 +32,6 @@ for stock_name in stock_names:
 
 # Convert LTP dictionary to DataFrame and save to Excel
 df1 = pd.DataFrame(LTP)
-df1.to_excel('API_stock_prices.xlsx', index=False, engine='openpyxl')
+df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx', index_col=None, engine='openpyxl')
 
 print(df1)

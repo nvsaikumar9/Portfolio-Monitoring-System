@@ -3,8 +3,8 @@ import pandas as pd
 import datetime
 
 # Load Excel files
-df_portfolio = pd.read_excel('Portfolio_details.xlsx')
-df_API = pd.read_excel('API_stock_prices.xlsx')
+df_portfolio = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx')
+df_API = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx')
 
 # Validate required columns
 required_columns_portfolio = ['PORT_HOLDER', 'STOCK_NAME', 'AVG_PRICE', 'SHARES']
@@ -73,5 +73,4 @@ for i in Uniq_port_holder:
 
 # Save to Excel
 df1 = pd.DataFrame(New_columns)
-output_file = f'Portfolio_Analyser.xlsx'
-df1.to_excel(output_file, index=False, engine='openpyxl')
+df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_Analyser.xlsx', index_col=None, engine='openpyxl')

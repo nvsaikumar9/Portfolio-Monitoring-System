@@ -2,7 +2,7 @@ import openpyxl
 import yfinance as yf
 import pandas as pd
 
-df = pd.read_excel('API_stock_prices.xlsx')
+df = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx')
 
 port_ = {
     'PORT_HOLDER': [],
@@ -59,4 +59,4 @@ while True:
     
 df1 = pd.DataFrame(port_)
 
-df1.to_excel("Portfolio_details.xlsx", index= True, engine= 'openpyxl')
+df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx', index= True, engine= 'openpyxl')

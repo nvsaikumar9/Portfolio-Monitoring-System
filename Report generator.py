@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_excel('Portfolio_Analyser.xlsx')
+df = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_Analyser.xlsx')
 
 #current gainer and looser
 #the total portfolio value
