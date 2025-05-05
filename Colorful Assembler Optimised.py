@@ -227,27 +227,30 @@ def main():
 
 
                 plain_body = f"""
-Hello {portfolio_holder_name},
+🌟 Hello {portfolio_holder_name}, 🌟
 
-Here is your daily portfolio update:
-
-Summary:
-- Total Portfolio Value: ₹{current_portfolio_value:.2f}
-- Profit/Loss: ₹{profitloss:.2f}
-- Top Gainer: {Top_gainer_stock} (+{Top_gainer_per:.2f}%)
-- Top Loser: {Top_looser_stock} (-{Top_looser_per:.2f}%)
-
-\nStocks that crossed the threshold:\n
-{Report}
-
-
-Please check the attached detailed report for more information.
-
-Best regards,
-Your Portfolio Tracker
 """
 
-                # HTML body with colors, emojis, and arrows
+                # Generate colorful HTML representation of the Report
+                colorful_report = ""
+                for line in Report.split("\n"):
+                    if "Corrected by" in line:
+                        parts = line.split(",")
+                        stock_name = parts[0]
+                        correction_value = parts[1].split("by")[1].strip()
+                        current_change = parts[2].split(":")[1].strip()
+                        weightage = parts[3].split(":")[1].strip()
+                        colorful_report += f"<p><strong>{stock_name}</strong>, Corrected by <span style='color: #f44336;'>{correction_value}</span>, Today's change: <span style='color: #2196F3;'>{current_change}</span>, Holding weightage: <span style='color: #9C27B0;'>{weightage}</span></p>"
+                    elif "Raise by" in line:
+                        parts = line.split(",")
+                        stock_name = parts[0]
+                        raise_value = parts[1].split("by")[1].strip()
+                        current_change = parts[2].split(":")[1].strip()
+                        weightage = parts[3].split(":")[1].strip()
+                        colorful_report += f"<p><strong>{stock_name}</strong>, Raise by <span style='color: #4CAF50;'>{raise_value}</span>, Today's change: <span style='color: #2196F3;'>{current_change}</span>, Holding weightage: <span style='color: #9C27B0;'>{weightage}</span></p>"
+                    else:
+                        colorful_report += f"<p>{line}</p>"
+
                 html_body = f"""
 <html>
 <head>
@@ -303,6 +306,111 @@ Your Portfolio Tracker
     </p>
     <p><strong>Top Gainer:</strong> <span style="color: #4CAF50;">{Top_gainer_stock} (+{Top_gainer_per:.2f}%)</span> 🚀</p>
     <p><strong>Top Loser:</strong> <span style="color: #f44336;">{Top_looser_stock} (-{Top_looser_per:.2f}%)</span> 📉</p>
+
+    <br> <!-- Add gap here -->
+
+    <h3>🚨 Stocks that crossed the threshold limit of {threshold_limit}% 🚨:</h3>
+    {colorful_report}
+
+    <h3>📋 Stock Details:</h3>
+    <table>
+        <tr>
+            <th>Stock Name</th>
+            <th>Avg Price</th>
+            <th>Current Price</th>
+            <th>Shares</th>
+            <th>Profit/Loss</th>
+            <th>% Change</th>
+        </tr>
+"""
+
+                for i in range(len(df_port_)):
+                    stock_name = df_port_['STOCK_NAME'].iloc[i]
+                    avg_price = df_port_['AVG_PRICE'].iloc[i]
+                    current_price = df_port_['CLOSE'].iloc[i]
+                    shares = df_port_['SHARES'].iloc[i]
+                    profit_loss = (current_price - avg_price) * shares
+                    percent_change = df_port_['ACTUAL_CLOSE%'].iloc[i]
+
+                    html_body += f"""
+        <tr>
+            <td>{stock_name}</td>
+            <td>₹{avg_price:.2f}</td>
+            <td>₹{current_price:.2f}</td>
+            <td>{shares}</td>
+            <td class="{ 'profit' if profit_loss >= 0 else 'loss' }">
+                { '📈' if profit_loss >= 0 else '📉' } ₹{profit_loss:.2f}
+            </td>
+            <td>{percent_change:.2f}%</td>
+        </tr>
+"""
+
+                html_body += """
+    </table>
+    <p>Thank you for using our service! 😊</p>
+</body>
+</html>
+"""
+                html_body = f"""
+<html>
+<head>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }}
+        h2 {{
+            color: #4CAF50;
+        }}
+        p {{
+            font-size: 16px;
+        }}
+        table {{
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }}
+        th, td {{
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }}
+        th {{
+            background-color: #4CAF50;
+            color: white;
+        }}
+        tr:nth-child(even) {{
+            background-color: #f2f2f2;
+        }}
+        tr:hover {{
+            background-color: #ddd;
+        }}
+        .profit {{
+            color: #4CAF50;
+            font-weight: bold;
+        }}
+        .loss {{
+            color: #f44336;
+            font-weight: bold;
+        }}
+    </style>
+</head>
+<body>
+    <h2>📊 Daily Portfolio Report for {portfolio_holder_name}</h2>
+    <p><strong>Total Portfolio Value:</strong> <span style="color: #4CAF50;">₹{current_portfolio_value:.2f}</span></p>
+    <p><strong>Profit/Loss:</strong> 
+        <span class="{ 'profit' if profitloss >= 0 else 'loss' }">
+            { '📈' if profitloss >= 0 else '📉' } ₹{profitloss:.2f}
+        </span>
+    </p>
+    <p><strong>Top Gainer:</strong> <span style="color: #4CAF50;">{Top_gainer_stock} (+{Top_gainer_per:.2f}%)</span> 🚀</p>
+    <p><strong>Top Loser:</strong> <span style="color: #f44336;">{Top_looser_stock} (-{Top_looser_per:.2f}%)</span> 📉</p>
+
+    <br> <!-- Add gap here -->
+    
+    <h3>🚨 Stocks that crossed the threshold limit of {threshold_limit}% 🚨:</h3>
+    {colorful_report}
 
     <h3>📋 Stock Details:</h3>
     <table>
