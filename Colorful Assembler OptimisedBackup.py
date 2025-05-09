@@ -9,7 +9,6 @@ import openpyxl
 import yfinance as yf
 import os
 import sys
-from bsedata.bse import BSE
 
 def send_email(sender_email, sender_password, recipient_email, subject, plain_body, html_body=None):
     msg = MIMEMultipart()
@@ -33,14 +32,31 @@ def send_email(sender_email, sender_password, recipient_email, subject, plain_bo
 
 def main():
     try:
+        nse = Nse()
 
-        df1 = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx')
+        try:
+            all_stock_symbols = nse.get_stock_codes()
+            all_stock_symbols = [i+'.NS' for i in all_stock_symbols]
+        except Exception as e:
+            print(f"Error fetching stock codes: {e}")
+            return
+
+        data = {
+            'STOCK_NAME': all_stock_symbols
+        }
+
+        try:
+            df1 = pd.DataFrame(data)
+            df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSE_stocks_name.xlsx', engine='openpyxl')
+        except Exception as e:
+            print(f"Error saving stock names to Excel: {e}")
+            return
 
         # Read stock names from Excel
         stock_names = df1['STOCK_NAME'].tolist()
 
         # Initialize LTP dictionary
-        LTP = {'STOCK_NAME': [], 'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'PREVIOUS_CLOSE': [], 'REF_SYMBOL': []}
+        LTP = {'STOCK_NAME': [], 'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'PREVIOUS_CLOSE': []}
 
         try:
             # Fetch data for all stocks in one API call
@@ -66,8 +82,6 @@ def main():
 
                         last_data = stock_data.iloc[0]
                         LTP['PREVIOUS_CLOSE'].append(last_data['Close'])
-                        LTP['REF_SYMBOL'].append(df1[df1['STOCK_NAME'] == stock_name].iloc[0]['REF_SYMBOL'])
-
             except Exception as e:
                 print(f"Error processing stock {stock_name}: {e}")
                 continue
@@ -90,8 +104,8 @@ def main():
 
         Uniq_port_holder = list(df_portfolio['PORT_HOLDER'].unique())
 
-        required_columns_portfolio = ['PORT_HOLDER', 'STOCK_NAME', 'AVG_PRICE', 'SHARES','REF_SYMBOL']
-        required_columns_api = ['STOCK_NAME', 'CLOSE', 'OPEN', 'HIGH', 'LOW','REF_SYMBOL']
+        required_columns_portfolio = ['PORT_HOLDER', 'STOCK_NAME', 'AVG_PRICE', 'SHARES']
+        required_columns_api = ['STOCK_NAME', 'CLOSE', 'OPEN', 'HIGH', 'LOW']
 
         if not all(col in df_portfolio.columns for col in required_columns_portfolio):
             raise ValueError("Missing required columns in Portfolio_details.xlsx")
@@ -103,7 +117,7 @@ def main():
         New_columns = {
             'PORT_HOLDER': [], 'STOCK_NAME': [], 'AVG_PRICE': [], 'SHARES': [],
             '%HIGH_CHANGE': [], '%LOW_CHANGE': [], 'CURRENT_%': [], 'HIGH_TO_LOW': [],
-            'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': [], 'PREVIOUS_CLOSE': [], 'ACTUAL_CLOSE%': [], 'EMAIL': [], 'REF_SYMBOL' : []
+            'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': [], 'PREVIOUS_CLOSE': [], 'ACTUAL_CLOSE%': [], 'EMAIL': []
         }
 
         # Process data
@@ -113,9 +127,9 @@ def main():
                 for j in df_port_holder['STOCK_NAME']:
                     try:
                         # Filter API data
-                        df_API_stock_values = df_API[df_API['STOCK_NAME'] == j]
+                        df_API_stock_values = df_API[df_API['STOCK_NAME'] == j + '.NS']
                         if df_API_stock_values.empty:
-                            print(f"Stock {j} not found in API data. Skipping...")
+                            print(f"Stock {j+'.NS'} not found in API data. Skipping...")
                             continue
 
                         # Extract API values
@@ -153,7 +167,6 @@ def main():
                         New_columns['PREVIOUS_CLOSE'].append(previous_close)
                         New_columns['ACTUAL_CLOSE%'].append(((close_price - previous_close) / previous_close) * 100)
                         New_columns['EMAIL'].append(df_port_stock_vales['Email'].iloc[0])
-                        New_columns['REF_SYMBOL'].append(df_port_stock_vales['REF_SYMBOL'].iloc[0])
                     except Exception as e:
                         print(f"Error processing stock {j} for portfolio holder {i}: {e}")
                         continue
@@ -193,7 +206,7 @@ def main():
                 Report = ''
 
                 for c in range(rows):
-                    stock_name = df_port_['REF_SYMBOL'].iloc[c]
+                    stock_name = df_port_['STOCK_NAME'].iloc[c]
                     avg_price = df_port_['AVG_PRICE'].iloc[c]
                     threshold_limit = df_port_['THRESHOLD_LIMIT'].iloc[c]
                     low_change = df_port_['%LOW_CHANGE'].iloc[c]
@@ -312,7 +325,7 @@ def main():
 """
 
                 for i in range(len(df_port_)):
-                    stock_name = df_port_['REF_SYMBOL'].iloc[i]
+                    stock_name = df_port_['STOCK_NAME'].iloc[i]
                     avg_price = df_port_['AVG_PRICE'].iloc[i]
                     current_price = df_port_['CLOSE'].iloc[i]
                     shares = df_port_['SHARES'].iloc[i]
@@ -412,7 +425,7 @@ def main():
 """
 
                 for i in range(len(df_port_)):
-                    stock_name = df_port_['REF_SYMBOL'].iloc[i]
+                    stock_name = df_port_['STOCK_NAME'].iloc[i]
                     avg_price = df_port_['AVG_PRICE'].iloc[i]
                     current_price = df_port_['CLOSE'].iloc[i]
                     shares = df_port_['SHARES'].iloc[i]

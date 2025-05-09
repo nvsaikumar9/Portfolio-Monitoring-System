@@ -3,14 +3,15 @@ import yfinance as yf
 import pandas as pd
 
 # Read stock names from Excel
-df = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSE_stocks_name.xlsx')
+df = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSEBSE_stocks_name.xlsx')
 stock_names = df['STOCK_NAME'].tolist()
 
 # Initialize LTP dictionary
 LTP = {'STOCK_NAME': [], 'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'PREVIOUS_CLOSE': []}
 
 # Fetch data for all stocks in one API call
-price_data = yf.download(tickers=stock_names, period="2d", interval="1d", group_by='ticker', threads=True)
+price_data = yf.download(tickers= stock_names, period="2d", interval="1d", group_by='ticker', threads=True)
+
 
 # Process each stock
 for stock_name in stock_names:
@@ -32,6 +33,6 @@ for stock_name in stock_names:
 
 # Convert LTP dictionary to DataFrame and save to Excel
 df1 = pd.DataFrame(LTP)
-df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx', index_col=None, engine='openpyxl')
+df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx', engine='openpyxl')
 
 print(df1)

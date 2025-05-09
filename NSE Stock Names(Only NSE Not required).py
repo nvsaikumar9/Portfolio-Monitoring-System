@@ -20,4 +20,4 @@ data = {
 
 # Create a DataFrame and save to Excel
 df = pd.DataFrame(data)
-df.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSE_stocks_name.xlsx', index_col=None, engine='openpyxl')
+df.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSE_stocks_name.xlsx', engine='openpyxl')

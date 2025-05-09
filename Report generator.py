@@ -23,12 +23,12 @@ for j in df['PORT_HOLDER'].unique():
     profitloss = current_portfolio_value - total_portfolio_value
 
     Top_looser_per = df_port_['ACTUAL_CLOSE%'].min()
-    Top_looser_stock = df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmin()]
-    Top_gainer_stock = df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmax()]
+    Top_looser_stock = df_port_['REF_SYMBOL'][df_port_['ACTUAL_CLOSE%'].idxmin()]
+    Top_gainer_stock = df_port_['REF_SYMBOL'][df_port_['ACTUAL_CLOSE%'].idxmax()]
     Top_gainer_per = df_port_['ACTUAL_CLOSE%'].max()
 
-    Report += f"Top Gainer: {df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmax()]} with change of {Top_gainer_per:.2f}%\n"
-    Report += f"Top Looser: {df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmin()]} with change of {Top_looser_per:.2f}%\n"
+    Report += f"Top Gainer: {df_port_['REF_SYMBOL'][df_port_['ACTUAL_CLOSE%'].idxmax()]} with change of {Top_gainer_per:.2f}%\n"
+    Report += f"Top Looser: {df_port_['REF_SYMBOL'][df_port_['ACTUAL_CLOSE%'].idxmin()]} with change of {Top_looser_per:.2f}%\n"
     
     Report += f"Portfolio Holder: {j}, P/L : {profitloss:.2f}\n"
     Report += f"Total invested: {total_portfolio_value:.2f}\n"
@@ -36,7 +36,7 @@ for j in df['PORT_HOLDER'].unique():
     
     for i in range(rows):
         # Extract the stock name and its corresponding values
-        stock_name = df_port_['STOCK_NAME'].iloc[i]
+        stock_name = df_port_['REF_SYMBOL'].iloc[i]
         avg_price = df_port_['AVG_PRICE'].iloc[i]
         shares = df_port_['SHARES'].iloc[i]
         threshold_limit = df_port_['THRESHOLD_LIMIT'].iloc[i]

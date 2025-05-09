@@ -7,8 +7,8 @@ df_portfolio = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-Pri
 df_API = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx')
 
 # Validate required columns
-required_columns_portfolio = ['PORT_HOLDER', 'STOCK_NAME', 'AVG_PRICE', 'SHARES']
-required_columns_api = ['STOCK_NAME', 'CLOSE', 'OPEN', 'HIGH', 'LOW']
+required_columns_portfolio = ['PORT_HOLDER', 'STOCK_NAME', 'AVG_PRICE', 'SHARES','REF_SYMBOL']
+required_columns_api = ['STOCK_NAME', 'CLOSE', 'OPEN', 'HIGH', 'LOW','REF_SYMBOL']
 
 if not all(col in df_portfolio.columns for col in required_columns_portfolio):
     raise ValueError("Missing required columns in Portfolio_details.xlsx")
@@ -21,7 +21,7 @@ Uniq_port_holder = list(df_portfolio['PORT_HOLDER'].unique())
 New_columns = {
     'PORT_HOLDER': [], 'STOCK_NAME': [], 'AVG_PRICE': [], 'SHARES': [],
     '%HIGH_CHANGE': [], '%LOW_CHANGE': [], 'CURRENT_%': [], 'HIGH_TO_LOW': [],
-    'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': [], 'PREVIOUS_CLOSE' : [], 'ACTUAL_CLOSE%' : [], 'EMAIL' : []
+    'CLOSE': [], 'OPEN': [], 'HIGH': [], 'LOW': [], 'THRESHOLD_LIMIT': [], 'PREVIOUS_CLOSE' : [], 'ACTUAL_CLOSE%' : [], 'EMAIL' : [], 'REF_SYMBOL' : []
 }
 
 # Process data
@@ -29,9 +29,9 @@ for i in Uniq_port_holder:
     df_port_holder = df_portfolio[df_portfolio['PORT_HOLDER'] == i]
     for j in df_port_holder['STOCK_NAME']:
         # Filter API data
-        df_API_stock_values = df_API[df_API['STOCK_NAME'] == j + '.NS']
+        df_API_stock_values = df_API[df_API['STOCK_NAME'] == j]
         if df_API_stock_values.empty:
-            print(f"Stock {j+'.NS'} not found in API data. Skipping...")
+            print(f"Stock {j} not found in API data. Skipping...")
             continue
 
         # Extract API values
@@ -69,8 +69,9 @@ for i in Uniq_port_holder:
         New_columns['PREVIOUS_CLOSE'].append(previous_close)
         New_columns['ACTUAL_CLOSE%'].append(((close_price - previous_close) / previous_close) * 100)
         New_columns['EMAIL'].append(df_port_stock_vales['Email'].iloc[0])
+        New_columns['REF_SYMBOL'].append(df_port_stock_vales['REF_SYMBOL'].iloc[0])
 
 
 # Save to Excel
 df1 = pd.DataFrame(New_columns)
-df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_Analyser.xlsx', index_col=None, engine='openpyxl')
+df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_Analyser.xlsx', engine='openpyxl')
