@@ -463,18 +463,29 @@ def main():
     except Exception as e:
         print(f"An error occurred in the main function: {e}")
 
-# Schedule the main function to run every 2 minutes
-schedule.every(0.1).minutes.do(main)
+#Schedule the main function to run every 2 minutes
+#schedule.every(0.1).minutes.do(main)
+#
+#print("Scheduler is running...")
+#
+## Keep the script running
+#try:
+#
+#    while True:
+#        schedule.run_pending()
+#        time.sleep(1)
+#except KeyboardInterrupt:
+#    print("Scheduler stopped by user.")
+#except Exception as e:
+#    print(f"An error occurred in the scheduler: {e}")
 
-print("Scheduler is running...")
 
-# Keep the script running
-try:
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Scheduler stopped by user.")
-except Exception as e:
-    print(f"An error occurred in the scheduler: {e}")
+if __name__ == "__main__":
+    try:
+        print("Script is running...")
+        main()  # Call the main function directly
+        print("Script execution completed.")
+    except KeyboardInterrupt:
+        print("Script stopped by user.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
