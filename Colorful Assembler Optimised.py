@@ -34,7 +34,7 @@ def send_email(sender_email, sender_password, recipient_email, subject, plain_bo
 def main():
     try:
 
-        df1 = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx')
+        df1 = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx', engine='openpyxl')
 
         # Read stock names from Excel
         stock_names = df1['STOCK_NAME'].tolist()
