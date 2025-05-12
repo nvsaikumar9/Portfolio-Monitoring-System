@@ -66,10 +66,8 @@ for e in range((rows)-1):
 for t in range(rows-1):
     if '.NS' in str(df.loc[t,'STOCK_NAME']) :
         df.loc[t,'REF_SYMBOL'] = df.loc[t,'STOCK_NAME']
-# Save to Excel with dynamic path
-output_dir = Path(__file__).parent / "output"
-output_dir.mkdir(exist_ok=True)
-output_file = output_dir / "NSEBSE_stocks_name.xlsx"
+# Save to Excel in the same directory as the script
+output_file = Path(__file__).parent / "NSEBSE_stocks_name.xlsx"
 
 try:
     df.to_excel(output_file, engine='openpyxl')

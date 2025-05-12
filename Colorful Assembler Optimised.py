@@ -197,8 +197,8 @@ def main():
                 profitloss = current_portfolio_value - total_portfolio_value
 
                 Top_looser_per = df_port_['ACTUAL_CLOSE%'].min()
-                Top_looser_stock = df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmin()]
-                Top_gainer_stock = df_port_['STOCK_NAME'][df_port_['ACTUAL_CLOSE%'].idxmax()]
+                Top_looser_stock = df_port_['REF_SYMBOL'][df_port_['ACTUAL_CLOSE%'].idxmin()]
+                Top_gainer_stock = df_port_['REF_SYMBOL'][df_port_['ACTUAL_CLOSE%'].idxmax()]
                 Top_gainer_per = df_port_['ACTUAL_CLOSE%'].max()
 
                 Report = ''
