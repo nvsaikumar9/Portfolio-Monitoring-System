@@ -11,6 +11,14 @@ import os
 import sys
 from bsedata.bse import BSE
 
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct relative paths for the required files
+portfolio_file = os.path.join(script_dir, 'Portfolio_details.xlsx')
+api_stock_prices_file = os.path.join(script_dir, 'API_stock_prices.xlsx')
+portfolio_analyser_file = os.path.join(script_dir, 'Portfolio_Analyser.xlsx')
+
 def send_email(sender_email, sender_password, recipient_email, subject, plain_body, html_body=None):
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -33,8 +41,8 @@ def send_email(sender_email, sender_password, recipient_email, subject, plain_bo
 
 def main():
     try:
-
-        df1 = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx', engine='openpyxl')
+        # Use the relative path for the portfolio file
+        df1 = pd.read_excel(portfolio_file, engine='openpyxl')
 
         # Read stock names from Excel
         stock_names = df1['STOCK_NAME'].tolist()
@@ -73,16 +81,16 @@ def main():
                 continue
 
         try:
-            # Convert LTP dictionary to DataFrame and save to Excel
+            # Convert LTP dictionary to DataFrame and save to Excel using relative path
             df2 = pd.DataFrame(LTP)
-            df2.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\API_stock_prices.xlsx', engine='openpyxl')
+            df2.to_excel(api_stock_prices_file, engine='openpyxl')
         except Exception as e:
             print(f"Error saving API stock prices to Excel: {e}")
             return
 
         try:
-            # Process portfolio details and generate reports
-            df_portfolio = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx', engine='openpyxl')
+            # Process portfolio details and generate reports using relative paths
+            df_portfolio = pd.read_excel(portfolio_file, engine='openpyxl')
             df_API = df2
         except Exception as e:
             print(f"Error reading portfolio or API data: {e}")
@@ -162,13 +170,16 @@ def main():
                 continue
 
         try:
-            # Save to Excel
+            # Save to Excel using relative path
             df4 = pd.DataFrame(New_columns)
-            df4.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_Analyser.xlsx', engine='openpyxl')
+            df4.to_excel(portfolio_analyser_file, engine='openpyxl')
         except Exception as e:
             print(f"Error saving portfolio analysis to Excel: {e}")
             return
-        
+
+        # The rest of the code remains unchanged...
+
+
         
         # Generate and send reports
         for j in df4['PORT_HOLDER'].unique():
@@ -478,7 +489,8 @@ def main():
 #    print("Scheduler stopped by user.")
 #except Exception as e:
 #    print(f"An error occurred in the scheduler: {e}")
-
+    except Exception as e:
+        print(f"An error occurred in the main function: {e}")
 
 if __name__ == "__main__":
     try:

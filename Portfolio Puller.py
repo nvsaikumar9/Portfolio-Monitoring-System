@@ -1,9 +1,17 @@
 import openpyxl
 import yfinance as yf
 import pandas as pd
+import os
+
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct relative paths for the required files
+stocks_file = os.path.join(script_dir, 'NSEBSE_stocks_name.xlsx')
+portfolio_file = os.path.join(script_dir, 'Portfolio_details.xlsx')
 
 # Load the stock data from an Excel file
-df = pd.read_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSEBSE_stocks_name.xlsx')
+df = pd.read_excel(stocks_file)
 
 # Initialize the portfolio dictionary
 port_ = {
@@ -89,7 +97,7 @@ while True:
 # Convert the portfolio dictionary to a DataFrame
 df1 = pd.DataFrame(port_)
 
-# Save the portfolio details to an Excel file
-df1.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\Portfolio_details.xlsx', index=True, engine='openpyxl')
+# Save the portfolio details to an Excel file using a relative path
+df1.to_excel(portfolio_file, index=True, engine='openpyxl')
 
 print("Portfolio details have been successfully saved to 'Portfolio_details.xlsx'.")

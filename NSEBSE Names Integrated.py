@@ -4,6 +4,8 @@ from bsedata.bse import BSE
 import openpyxl
 import yfinance as yf
 import time
+import os
+from pathlib import Path
 
 nse = Nse()
 bse = BSE(update_codes=True)
@@ -38,7 +40,7 @@ data = {
 
 # Create a DataFrame and save to Excel
 df = pd.DataFrame(data)
-df.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSEBSE_stocks_namebackupdata.xlsx', engine='openpyxl')
+#df.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSEBSE_stocks_namebackupdata.xlsx', engine='openpyxl')
 
 df['REF_SYMBOL'] = df['STOCK_FULL_NAME']
 
@@ -64,5 +66,13 @@ for e in range((rows)-1):
 for t in range(rows-1):
     if '.NS' in str(df.loc[t,'STOCK_NAME']) :
         df.loc[t,'REF_SYMBOL'] = df.loc[t,'STOCK_NAME']
+# Save to Excel with dynamic path
+output_dir = Path(__file__).parent / "output"
+output_dir.mkdir(exist_ok=True)
+output_file = output_dir / "NSEBSE_stocks_name.xlsx"
 
-df.to_excel(r'C:\Vizual Studio Code\Python Programs\Project-PriceAlert\NSEBSE_stocks_name.xlsx', engine='openpyxl')
+try:
+    df.to_excel(output_file, engine='openpyxl')
+    print(f"File saved successfully at {output_file}")
+except Exception as e:
+    print(f"Error saving file: {e}")
